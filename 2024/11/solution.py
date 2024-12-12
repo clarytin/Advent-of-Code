@@ -7,7 +7,7 @@ def main():
     for _ in range(75):
         adds = collections.defaultdict(int)
         items = [i for i in nums.items()]
-
+        
         for num, count in items:
             del[nums[num]]
             if num == 0:
