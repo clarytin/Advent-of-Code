@@ -1,5 +1,4 @@
 import re
-import numpy as np
 from math import isclose
 
 
@@ -13,8 +12,8 @@ def main():
         machine[2][1] += 10000000000000
         tokens2 += countTokens(machine)
 
-    print(tokens1)
-    print(tokens2)
+    print(int(tokens1))
+    print(int(tokens2))
    
 
 def countTokens(machine):
@@ -23,15 +22,23 @@ def countTokens(machine):
     prizeX = machine[2][0]
     prizeY = machine[2][1]
 
-    A = np.array([[aX, bX], [aY, bY]])
-    B = np.array([prizeX, prizeY])
+    # Get determinant and check if invertible
+    det = ((aX * bY) - (aY * bX))
 
-    aTokens, bTokens = np.linalg.solve(A, B)
-
-    if isclose(abs(aTokens - round(aTokens)), 0, abs_tol=1e-4):
-        if isclose(abs(bTokens - round(bTokens)), 0, abs_tol=1e-4):
-            return (round(aTokens) * 3) + round(bTokens)
+    # A = | aX, aY |   X = | a |    B = | prizeX | 
+    #     | bX, bY |       | b |        | prizeY |      
     
+    # A * X = B
+    # X = A^-1 * B
+    # A^-1 = 1/determinant * | bY, -aY |
+    #                        | -bX, aX | 
+    if det != 0: 
+        a = (1 / det) * ((bY * prizeX) + (-bX * prizeY))
+        b = (1 / det) * ((-aY * prizeX) + (aX * prizeY))
+        if isclose(a - round(a), 0, abs_tol=1e-4):
+            if isclose(b - round(b), 0, abs_tol=1e-4):
+                return (a * 3) + b
+            
     return 0
 
 
