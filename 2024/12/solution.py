@@ -45,7 +45,6 @@ def getNumSides(region):
 
     return count
 
-   
 
 def getPerimeter(region):
     perimeter = 0
