@@ -4,33 +4,29 @@ import re
 def main():
     quads = [0, 0, 0, 0, 0]
     robots = getRobots()
+    xs, ys = 101, 103
+
     for robot in robots:
-        i = getPosition(101, 103, 100, robot)
+        x, y, i = getPosition(xs, ys, 100, robot)
         quads[i] += 1
 
     print(quads[1] * quads[2] * quads[3] * quads[4])
 
 
-def getPosition(rows, cols, seconds, robot):
+def getPosition(xs, ys, seconds, robot):
     x, y, vx, vy = robot
-    midx = rows // 2
-    midy = cols // 2
+    midx = xs // 2
+    midy = ys // 2
 
-    for _ in range(seconds):
-        x += vx
-        y += vy
+    x = (x + (seconds * vx)) % xs
+    y = (y + (seconds * vy)) % ys
 
-        if x < 0: x += rows
-        if y < 0: y += cols
-        if x >= rows: x -= rows
-        if y >= cols: y -= cols
+    if x < midx and y < midy: return x, y, 1
+    if x < midx and y > midy: return x, y, 2
+    if x > midx and y < midy: return x, y, 3
+    if x > midx and y > midy: return x, y, 4
 
-    if x < midx and y < midy: return 1
-    if x < midx and y > midy: return 2
-    if x > midx and y < midy: return 3
-    if x > midx and y > midy: return 4
-
-    return 0
+    return x, y, 0
 
 
 def getRobots():
