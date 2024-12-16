@@ -1,5 +1,4 @@
 import re
-from math import isclose
 
 
 def main():
@@ -12,8 +11,8 @@ def main():
         machine[2][1] += 10000000000000
         tokens2 += countTokens(machine)
 
-    print(int(tokens1))
-    print(int(tokens2))
+    print(tokens1)
+    print(tokens2)
    
 
 def countTokens(machine):
@@ -33,11 +32,15 @@ def countTokens(machine):
     # A^-1 = 1/determinant * | bY, -aY |
     #                        | -bX, aX | 
     if det != 0: 
-        a = (1 / det) * ((bY * prizeX) + (-bX * prizeY))
-        b = (1 / det) * ((-aY * prizeX) + (aX * prizeY))
-        if isclose(a - round(a), 0, abs_tol=1e-4):
-            if isclose(b - round(b), 0, abs_tol=1e-4):
-                return (a * 3) + b
+        a = (bY * prizeX) + (-bX * prizeY)
+        if a % det != 0: return 0
+        a //= det
+
+        b = (-aY * prizeX) + (aX * prizeY)
+        if b % det != 0: return 0
+        b //= det
+        
+        return (a * 3) + b
             
     return 0
 
