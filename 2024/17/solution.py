@@ -1,5 +1,34 @@
 def main():
     A, B, C, program = getInput()
+    print(part1(A, B, C, program))
+    print(part2(B, C, program))
+
+    '''
+    B = A % 8
+    B = B ^ 1
+    C = A // (2 ** B)
+    B = B ^ 5
+    B = B ^ C
+    A = A // 8
+    output += B % 8
+    go back to start
+    '''
+
+
+def part2(B, C, program):
+    A = 0
+    for i in range(1, len(program) + 1):
+        newA = A << 3
+        programSlice = ",".join(map(str, program[-i:]))
+
+        while part1(newA, B, C, program) != programSlice:
+            newA += 1
+
+        A = newA
+    return A
+
+
+def part1(A, B, C, program):
     output = ""
 
     i = 0
@@ -30,17 +59,21 @@ def main():
         i += 2
 
     if output: output = output[:-1]
-    print(output)
+    return output
  
 
 def getInput():
-    f = open("input3.txt", "r")
+    f = open("input.txt", "r")
+
     A = int(f.readline().split(" ")[2])
     B = int(f.readline().split(" ")[2])
     C = int(f.readline().split(" ")[2])
+
     f.readline()
+
     program = f.readline().split(" ")[1].strip()
     program = [int(i) for i in program.split(",")]
+
     f.close()
     return A, B, C, program
 
