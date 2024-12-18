@@ -1,26 +1,27 @@
 def main():
     coords = getInput()
-    path, score = bfs(coords[:1024], 70, 70)
-    print(score)
+    print(bfs(coords[:1024], 70, 70))
 
-    for i in range(1024, len(coords)):
-        if coords[i] in path:
-            path, score = bfs(coords[:i+1], 70, 70)
+    lo, hi = 1024, len(coords)
+    while lo != hi:
+        mid = (lo + hi) // 2
+        if bfs(coords[:mid + 1], 70, 70) == -1:
+            hi = mid
+        else:
+            lo = mid + 1
 
-            if score == -1:
-                print(str(coords[i][0]) + "," + str(coords[i][1]))
-                break
+    print(str(coords[lo][0]) + "," + str(coords[lo][1]))
 
 
 def bfs(coords, endX, endY):
     dirs = [(-1,0), (0, 1), (1, 0), (0, -1)]
     visited = set()
-    q = [(0, 0, 0, set())]
+    q = [(0, 0, 0)]
 
     while q:
-        x, y, score, path = q.pop(0)
+        x, y, score = q.pop(0)
         if (x == endX) and (y == endY):
-            return path, score
+            return score
         if (x < 0) or (y < 0) or (x > endX) or (y > endY):
             continue
         if (x, y) in visited or (x, y) in coords:
@@ -28,10 +29,9 @@ def bfs(coords, endX, endY):
 
         visited.add((x, y))
         for addX, addY in dirs:
-            q.append((x + addX, y + addY, score + 1, path | {(x, y)}))
+            q.append((x + addX, y + addY, score + 1))
 
-    return [], -1
-
+    return -1
 
 
 def getInput():
