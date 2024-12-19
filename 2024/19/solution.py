@@ -2,17 +2,20 @@ import collections
 
 
 def main():
-    towelList, patterns = getInput()
-    
-    towels = collections.defaultdict(list)
-    for towel in towelList:
-        towels[towel[0]].append(towel)
+    towels, patterns = getInput()
 
-    count = 0
+    allWays = 0
     prev = {}
     for pattern in patterns:
-        count += makePattern(towels, pattern, prev)
+        allWays += makePattern(towels, pattern, prev)
+
+    count = 0
+    for pattern in patterns:
+        if prev[pattern] != 0:
+            count += 1
+
     print(count)
+    print(allWays)
 
 
 def makePattern(towels, pattern, prev):
@@ -21,21 +24,25 @@ def makePattern(towels, pattern, prev):
     
     if pattern in prev:
         return prev[pattern]
+    
+    count = 0
     for towel in towels[pattern[0]]:
         if towel == pattern[:len(towel)]:
-
-            if makePattern(towels, pattern[len(towel):], prev) == 1:
-                prev[pattern] = 1
-                return 1
+            count += makePattern(towels, pattern[len(towel):], prev)
         
-    prev[pattern] = 0
-    return 0
+    prev[pattern] = count
+    return count
 
 
 def getInput():
     f = open("input.txt", "r")
 
-    towels = f.readline().strip().replace(" ", "").split(",")
+    towelList = f.readline().strip().replace(" ", "").split(",")
+    
+    towels = collections.defaultdict(list)
+    for towel in towelList:
+        towels[towel[0]].append(towel)
+
     f.readline()
 
     patterns = []
