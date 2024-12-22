@@ -1,60 +1,49 @@
 def main():
     inputs = getInputs()
-    d = get12Dict()
-    ans = 0
-
+    ans1, ans2 = 0, 0
 
     for i in inputs:
-
-        minimum = 10000000000000
         strings = bfs(i)
+        min1, min2 = float("inf"),  float("inf")
 
         for string in strings:
-            code = getCode("A" + string, string)
-            for prev, curr in zip("A" + code, code):
-                code += d[prev][curr]
+            min1 = min(min1, twoBots(string))
+            min2 = min(min2, twentyFiveBots(string))
+   
+        ans1 += int(i[:3]) * min1
+        ans2 += int(i[:3]) * min2
 
-            length = 0
-            for prev, curr in zip("A" + code, code):
-                length += len(d[prev][curr])
-            
-       
-
-            minimum = min(minimum, length)
-            
-        print(minimum)
-
-        ans += int(i[:3]) * minimum
-
-    print(ans)
+    print(ans1)
+    print(ans2)
 
 
-def get12Dict():
-    d = {}
-    for ch in ["^", ">", "v", "<", "A"]:
-        d[ch] = {}
-        for nextCh in ["^", ">", "v", "<", "A"]:
-            string = getCode(ch, nextCh)
-            for _ in range(11):
-                string = getCode("A" + string, string)
-            d[ch][nextCh] = string
-
-    return d
+def twoBots(string):
+    string = getCode(string)
+    string = getCode(string)
+    return len(string)
 
 
-def getCode(prevLine, nextLine):
-    dp = {}
-    dp["<"] = {"^": ">^A", ">": ">>A", "v": ">A", "<": "A", "A": ">>^A"}
-    dp["v"] = {"^": "^A", ">": ">A", "v": "A", "<": "<A", "A": ">^A"}
-    dp[">"] = {"^": "<^A", ">": "A", "v": "<A", "<": "<<A", "A": "^A"}
-    dp["^"] = {"^": "A", ">": "v>A", "v": "vA", "<": "<vA", "A": ">A"}
-    dp["A"] = {"^": "<A", ">": "vA", "v": "<vA", "<": "v<<A", "A": "A"}
+def twentyFiveBots(string):
+    global twelveDict
+    string = getCode(string)
 
-    string = ""
-    for prev, curr in zip(prevLine, nextLine):
-        string += dp[prev][curr]
-    return string
-    
+    thirteenth = ""
+    for prev, curr in zip("A" + string, string):
+        thirteenth += twelveDict[prev][curr]
+
+    length = 0
+    for prev, curr in zip("A" + thirteenth, thirteenth):
+        length += len(twelveDict[prev][curr])
+
+    return length
+
+
+def getCode(string):
+    res = ""
+    for prev, curr in zip("A" + string, string):
+        res += charDict[prev][curr]
+    return res
+
     
 def bfs(line):
     paths, vis = [], {}
@@ -79,6 +68,30 @@ def bfs(line):
             q.append((line, symbol, path + direction))
     
     return [i for i in paths if len(i) == len(paths[0])]
+
+
+def getTwelveDict():
+    global charDict
+    d = {}
+    for ch in ["^", ">", "v", "<", "A"]:
+        d[ch] = {}
+        for nextCh in ["^", ">", "v", "<", "A"]:
+            string = charDict[ch][nextCh]
+            for _ in range(11):
+                string = getCode(string)
+            d[ch][nextCh] = string
+
+    return d
+
+
+def getCharDict():
+    charDict = {}
+    charDict["<"] = {"^": ">^A", ">": ">>A", "v": ">A", "<": "A", "A": ">>^A"}
+    charDict["v"] = {"^": "^A", ">": ">A", "v": "A", "<": "<A", "A": "^>A"}
+    charDict[">"] = {"^": "<^A", ">": "A", "v": "<A", "<": "<<A", "A": "^A"}
+    charDict["^"] = {"^": "A", ">": "v>A", "v": "vA", "<": "v<A", "A": ">A"}
+    charDict["A"] = {"^": "<A", ">": "vA", "v": "<vA", "<": "v<<A", "A": "A"}
+    return charDict
 
 
 def getNPad():
@@ -107,4 +120,6 @@ def getInputs():
 
 
 if __name__ == "__main__":
+    charDict = getCharDict()
+    twelveDict = getTwelveDict()
     main()
