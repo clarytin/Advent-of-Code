@@ -1,21 +1,48 @@
 def main():
     inputs = getInputs()
+    d = get12Dict()
     ans = 0
 
+
     for i in inputs:
-        minimum = 10000
+
+        minimum = 10000000000000
         strings = bfs(i)
 
         for string in strings:
-            code = getCode(getCode(string))
-            minimum = min(minimum, len(code))
+            code = getCode("A" + string, string)
+            for prev, curr in zip("A" + code, code):
+                code += d[prev][curr]
+
+            length = 0
+            for prev, curr in zip("A" + code, code):
+                length += len(d[prev][curr])
+            
+       
+
+            minimum = min(minimum, length)
+            
+        print(minimum)
 
         ans += int(i[:3]) * minimum
 
     print(ans)
 
 
-def getCode(line):
+def get12Dict():
+    d = {}
+    for ch in ["^", ">", "v", "<", "A"]:
+        d[ch] = {}
+        for nextCh in ["^", ">", "v", "<", "A"]:
+            string = getCode(ch, nextCh)
+            for _ in range(11):
+                string = getCode("A" + string, string)
+            d[ch][nextCh] = string
+
+    return d
+
+
+def getCode(prevLine, nextLine):
     dp = {}
     dp["<"] = {"^": ">^A", ">": ">>A", "v": ">A", "<": "A", "A": ">>^A"}
     dp["v"] = {"^": "^A", ">": ">A", "v": "A", "<": "<A", "A": ">^A"}
@@ -24,7 +51,7 @@ def getCode(line):
     dp["A"] = {"^": "<A", ">": "vA", "v": "<vA", "<": "v<<A", "A": "A"}
 
     string = ""
-    for prev, curr in zip("A" + line, line):
+    for prev, curr in zip(prevLine, nextLine):
         string += dp[prev][curr]
     return string
     
